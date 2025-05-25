@@ -8,13 +8,13 @@ import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Objects;
 
 @RestController
-@RequestMapping("/api/obj")
-public class ObjController {
+@RequestMapping("/api/fbx")
+public class FbxController {
 
     @Autowired
     private BlenderService blenderService;
@@ -25,8 +25,12 @@ public class ObjController {
             return ResponseEntity.badRequest().body("File is empty");
         }
 
+        if (!Objects.requireNonNull(file.getOriginalFilename()).toLowerCase().endsWith(".fbx")) {
+            return ResponseEntity.badRequest().body("Only FBX files are supported");
+        }
+
         try {
-            String filename = blenderService.handleObjFile(file);
+            String filename = blenderService.handleFbxFile(file);
             return ResponseEntity.ok(filename); // Just return the filename
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

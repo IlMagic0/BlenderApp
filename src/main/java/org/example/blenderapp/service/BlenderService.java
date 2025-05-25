@@ -12,7 +12,7 @@ public class BlenderService {
 
     private final Path uploadDir = Paths.get("uploads").toAbsolutePath().normalize();
     private final Path processedDir = Paths.get("processed").toAbsolutePath().normalize();
-    private final Path blenderScriptPath = Paths.get("src", "blender", "process_obj.py").toAbsolutePath();
+    private final Path blenderScriptPath = Paths.get("src", "blender", "process_fbx.py").toAbsolutePath();
 
     public BlenderService() throws IOException {
         Files.createDirectories(uploadDir);
@@ -30,10 +30,10 @@ public class BlenderService {
         }
     }
 
-    public String handleObjFile(MultipartFile file) throws IOException, InterruptedException {
+    public String handleFbxFile(MultipartFile file) throws IOException, InterruptedException {
         String originalFilename = Objects.requireNonNull(file.getOriginalFilename());
-        if (!originalFilename.toLowerCase().endsWith(".obj")) {
-            throw new IllegalArgumentException("Only .obj files are supported");
+        if (!originalFilename.toLowerCase().endsWith(".fbx")) {
+            throw new IllegalArgumentException("Only .fbx files are supported");
         }
 
         Path inputPath = uploadDir.resolve(originalFilename);
