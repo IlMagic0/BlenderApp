@@ -2,6 +2,14 @@ import bpy
 import sys
 import os
 
+# Enable OBJ add-on
+bpy.ops.preferences.addon_enable(module="io_scene_obj")
+
+# Verify it's enabled
+if not hasattr(bpy.ops.import_scene, 'obj'):
+    print("ERROR: Failed to enable OBJ importer")
+    sys.exit(1)
+
 def main():
     try:
         # Get arguments after --
