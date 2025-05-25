@@ -1,9 +1,26 @@
 import bpy
 import sys
 import os
+import subprocess
+import importlib
+
+def ensure_dependencies():
+    try:
+        # Try to import numpy
+        import numpy
+    except ImportError:
+        print("Installing required dependencies...")
+        # Get Python executable path from Blender
+        python_exe = sys.executable
+        # Install numpy using pip
+        subprocess.check_call([python_exe, "-m", "pip", "install", "numpy"])
+        print("Dependencies installed successfully")
 
 def main():
     try:
+        # Ensure dependencies are installed
+        ensure_dependencies()
+        
         args = sys.argv[sys.argv.index("--") + 1:]
         input_path = args[0]
         output_path = args[1]
