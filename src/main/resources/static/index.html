@@ -31,17 +31,21 @@
         method: "POST",
         body: formData
       });
-      if (!response.ok) throw new Error("Upload failed.");
 
-      const resultPath = await response.text();
-      const filename = resultPath.split("/").pop();
+      if (!response.ok) {
+        const error = await response.text();
+        throw new Error(error);
+      }
 
-      link.href = "/api/obj/download/" + filename;
-      link.textContent = "Download processed file";
+      const filename = await response.text();
+
+      link.href = "/api/obj/download/" + encodeURIComponent(filename);
+      link.textContent = "Download processed file: " + filename;
       link.style.display = "inline";
       status.textContent = "Processing complete!";
     } catch (err) {
       status.textContent = "Error: " + err.message;
+      console.error("Upload error:", err);
     }
   });
 </script>
