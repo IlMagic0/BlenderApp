@@ -27,7 +27,7 @@
     link.style.display = "none";
 
     try {
-      const response = await fetch("/api/obj/upload", {
+      const response = await fetch("/api/fbx/upload", {
         method: "POST",
         body: formData
       });
@@ -39,7 +39,7 @@
 
       const filename = await response.text();
 
-      link.href = "/api/obj/download/" + encodeURIComponent(filename);
+      link.href = "/api/fbx/download/" + encodeURIComponent(filename);
       link.textContent = "Download processed file: " + filename;
       link.style.display = "inline";
       status.textContent = "Processing complete!";
