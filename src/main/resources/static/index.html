@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Upload .OBJ File</title>
+</head>
+<body>
+<h2>Upload a .OBJ file to a process with Blender</h2>
+
+<form id="uploadForm" enctype="multipart/form-data">
+  <input type="file" name="file" accept=".obj" required />
+  <button type="submit">Upload and Process</button>
+</form>
+
+<p id="status"></p>
+<a id="downloadLink" style="display:none;" download>Download Processed File</a>
+
+<script>
+  document.getElementById("uploadForm").addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const formData = new FormData(this);
+    const status = document.getElementById("status");
+    const link = document.getElementById("downloadLink");
+
+    status.textContent = "Uploading and processing...";
+    link.style.display = "none";
+
+    try {
+      const response = await fetch("/api/obj/upload", {
+        method: "POST",
+        body: formData
+      });
+      if (!response.ok) throw new Error("Upload failed.");
+
+      const resultPath = await response.text();
+      const filename = resultPath.split("/").pop();
+
+      link.href = "/api/obj/download/" + filename;
+      link.textContent = "Download processed file";
+      link.style.display = "inline";
+      status.textContent = "Processing complete!";
+    } catch (err) {
+      status.textContent = "Error: " + err.message;
+    }
+  });
+</script>
+</body>
+</html>
