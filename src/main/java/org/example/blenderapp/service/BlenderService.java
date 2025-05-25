@@ -48,12 +48,15 @@ public class BlenderService {
         ProcessBuilder pb = new ProcessBuilder(
                 "blender",
                 "--background",
+                "--python-expr",
+                "import bpy; print('Available importers:', [op for op in dir(bpy.ops.import_scene) if not op.startswith('_')])",
                 "--python",
                 blenderScriptPath.toString(),
                 "--",
                 inputPath.toString(),
                 outputPath.toString()
         );
+        pb.inheritIO();
 
         pb.redirectErrorStream(true);
         Process process = pb.start();

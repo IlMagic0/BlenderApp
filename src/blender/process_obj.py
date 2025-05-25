@@ -2,46 +2,49 @@ import bpy
 import sys
 import os
 
-try:
-    # Get arguments
-    args = sys.argv[sys.argv.index("--") + 1:]
-    if len(args) < 2:
-        print("Error: Missing input or output path")
-        sys.exit(1)
+def main():
+    try:
+        # Get arguments after --
+        args = sys.argv[sys.argv.index("--") + 1:]
+        input_path = args[0]
+        output_path = args[1]
 
-    input_path = args[0]
-    output_path = args[1]
+        # Clear existing data
+        bpy.ops.wm.read_factory_settings(use_empty=True)
 
-    # Verify that the input file exists
-    if not os.path.exists(input_path):
-        print(f"Error: Input file not found at {input_path}")
-        sys.exit(1)
+        # Verify OBJ importer is available
+        if not hasattr(bpy.ops.import_scene, 'obj'):
+            print("ERROR: OBJ importer not available in this Blender build")
+            return 1
 
-    # Clear existing objects
-    bpy.ops.wm.read_factory_settings(use_empty=True)
+        # Import OBJ
+        print(f"Importing {input_path}...")
+        bpy.ops.import_scene.obj(filepath=input_path)
 
-    # Import OBJ
-    bpy.ops.import_scene.obj(filepath=input_path)
+        # Verify import succeeded
+        if not bpy.data.objects:
+            print("ERROR: No objects imported")
+            return 1
 
-    # Check if anything was imported
-    if not bpy.context.selected_objects:
-        print("Error: No objects were imported from the OBJ file")
-        sys.exit(1)
+        # Example processing - scale all objects
+        print("Processing objects...")
+        for obj in bpy.data.objects:
+            obj.scale = (2.0, 2.0, 2.0)
 
-    # Example processing - scale all objects
-    for obj in bpy.context.selected_objects:
-        obj.scale = (2.0, 2.0, 2.0)
+        # Export OBJ
+        print(f"Exporting to {output_path}...")
+        bpy.ops.export_scene.obj(
+            filepath=output_path,
+            use_selection=False,
+            use_mesh_modifiers=True
+        )
 
-    # Export OBJ
-    bpy.ops.export_scene.obj(
-        filepath=output_path,
-        use_selection=True,
-        use_mesh_modifiers=True
-    )
+        print("Processing completed successfully")
+        return 0
 
-    print(f"Successfully processed {input_path} to {output_path}")
-    sys.exit(0)
+    except Exception as e:
+        print(f"ERROR: {str(e)}")
+        return 1
 
-except Exception as e:
-    print(f"Error during processing: {str(e)}")
-    sys.exit(1)
+if __name__ == "__main__":
+    sys.exit(main())
